@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Template v3.3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500|Jost:400,500,600&display=swap");
+
+        :root {
+            --bg-card: rgba(20, 20, 20, 0.7);
+            --bg-body: #0a0a0a;
+            --bg-overlay: rgba(0, 0, 0, 0.6);
+            --text-primary: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --accent-color: #ff4757;
+            --shadow-color: rgba(255, 71, 87, 0.3);
+            --component-bg: rgba(255, 71, 87, 0.1);
+            --component-bg-hover: rgba(255, 71, 87, 0.2);
+        }
+
+        body.light-mode {
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-body: #f0f0f0;
+            --bg-overlay: rgba(255, 255, 255, 0.5);
+            --text-primary: #1a1a1a;
+            --text-secondary: #333;
+            --accent-color: #d63031;
+            --shadow-color: rgba(214, 48, 49, 0.3);
+            --component-bg: rgba(214, 48, 49, 0.05);
+            --component-bg-hover: rgba(214, 48, 49, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            font-family: "Jost", sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-body);
+            transition: background-color 0.5s ease;
+        }
+
+        #background-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        body { display: grid; place-items: center; padding: 30px; }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
+            transition: background-color 0.5s ease;
+        }
+
+        .card {
+            width: 100%; height: 100%;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 1px var(--shadow-color), 0 30px 60px var(--shadow-color);
+            overflow: hidden;
+            transition: background-color 0.5s ease, border-radius 0.4s ease;
+        }
+        
+        .card-header { position: relative; flex-shrink: 0; transition: height 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+        .card-main { flex-grow: 1; overflow-y: auto; position: relative; }
+        .card-buttons { flex-shrink: 0; z-index: 5; }
+
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .card { border-radius: 0; border: none; }
+        }
+
+        /* --- STYLING ASLI (TIDAK DIUBAH) --- */
+        .card-header { display: flex; height: 220px; width: 100%; }
+        .card.is-active .card-header { height: 80px; }
+        .card.is-active .card-avatar { transform: none; left: 20px; width: 50px; height: 50px; bottom: 15px; }
+        .card.is-active .card-fullname, .card.is-active .card-jobtitle { left: 85px; transform: none; }
+        .card.is-active .card-fullname { bottom: 25px; font-size: 18px; }
+        .card.is-active .card-jobtitle { bottom: 8px; font-size: 10px; }
+        .card-header * { transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+        .card-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(-60px); box-shadow: 0 10px 30px var(--shadow-color); border: 3px solid var(--accent-color); }
+        .card-fullname { position: absolute; bottom: 0; font-size: 24px; font-weight: 700; text-align: center; white-space: nowrap; transform: translateY(-15px) translateX(-50%); left: 50%; background: linear-gradient(135deg, #ff4757, #ff6b7a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .card-jobtitle { position: absolute; bottom: 0; font-size: 12px; white-space: nowrap; font-weight: 500; opacity: .8; text-transform: uppercase; letter-spacing: 1px; margin: 0; left: 50%; transform: translateX(-50%) translateY(5px); color: var(--text-secondary); }
+        .card-content { padding: 25px; }
+        .card-subtitle { font-weight: 700; font-size: 14px; margin-bottom: 15px; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; }
+        .card-text { line-height: 1.6; color: var(--text-secondary); font-size: 14px; margin: 0; font-weight: 400; font-family: "DM Sans", sans-serif; }
+        .card-buttons { display: flex; background: var(--component-bg); width: 100%; backdrop-filter: blur(10px); flex-wrap: wrap; }
+        .card-buttons button { flex: 1 1 auto; min-width: 80px; user-select: none; background: 0; font-size: 12px; border: 0; padding: 15px 5px; cursor: pointer; color: var(--text-secondary); transition: all .3s; font-family: "Jost", sans-serif; font-weight: 500; outline: 0; border-bottom: 3px solid transparent; text-transform: uppercase; letter-spacing: .5px; }
+        .card-buttons button.is-active, .card-buttons button:hover { color: var(--text-primary); border-bottom: 3px solid var(--accent-color); background: linear-gradient(to bottom, rgba(255, 71, 87, 0) 0%, var(--component-bg-hover) 100%); }
+        .card-section { display: none; animation: fadeIn 0.6s cubic-bezier(.23, 1, .32, 1); }
+        .card-section.is-active { display: block; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+        .card-main::-webkit-scrollbar { width: 6px; }
+        .card-main::-webkit-scrollbar-track { background: var(--component-bg); border-radius: 3px; }
+        .card-main::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 3px; }
+        .stagger-item { opacity: 0; transform: translateY(20px); animation: slideUpFadeIn 0.5s ease-out forwards; }
+        @keyframes slideUpFadeIn { to { opacity: 1; transform: translateY(0); } }
+        .header-buttons { position: absolute; top: 15px; right: 15px; z-index: 10; display: flex; gap: 10px; }
+        .theme-toggle, .lang-toggle, .encrypt-toggle { background: none; border: none; color: var(--text-primary); font-size: 20px; cursor: pointer; padding: 5px; line-height: 1; transition: color .3s, transform .3s; }
+        .theme-toggle:hover, .lang-toggle:hover, .encrypt-toggle:hover { color: var(--accent-color); transform: scale(1.1); }
+        .lang-toggle { font-family: "Jost", sans-serif; font-weight: 600; }
+        .universe-container { text-align: center; }.universe-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 25px; }.universe-item { cursor: pointer; padding: 20px; border-radius: 15px; background: var(--component-bg); border: 1px solid transparent; transition: all 0.3s ease; }.universe-item.active, .universe-item:hover { background: var(--component-bg-hover); border-color: var(--accent-color); transform: translateY(-5px); }.universe-item i { font-size: 40px; margin-bottom: 10px; color: var(--accent-color); }.universe-item-title { font-weight: 500; color: var(--text-primary); }
+        .skills-grid { display: grid; grid-template-columns: 1fr; gap: 15px; text-align: left; }.skill-item { background: var(--component-bg); padding: 15px; border-radius: 10px; transition: background-color 0.3s; }.skill-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: "DM Sans", sans-serif; }.skill-name { font-weight: 500; }.skill-level { font-size: 12px; opacity: 0.8; }.skill-bar { width: 100%; height: 8px; background-color: rgba(0,0,0,0.2); border-radius: 4px; overflow: hidden; }.skill-progress { height: 100%; background-color: var(--accent-color); border-radius: 4px; width: var(--skill-width, 0%); transition: width 1s ease-out 0.3s; }
+        .project-card { cursor: pointer; background: var(--component-bg); border: 1px solid var(--shadow-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; transition: all .3s; text-align: left; }.project-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px var(--shadow-color); border-color: var(--accent-color); }.project-title { font-size: 16px; font-weight: 600; color: var(--accent-color); margin-bottom: 8px; }.project-desc { color: var(--text-secondary); line-height: 1.5; font-family: "DM Sans", sans-serif; font-size: 13px; }
+        .cert-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center; }.cert-filters button { background: var(--component-bg); border: 1px solid var(--shadow-color); color: var(--text-secondary); padding: 5px 15px; border-radius: 20px; cursor: pointer; transition: all 0.3s; }.cert-filters button.active, .cert-filters button:hover { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .cert-list { list-style: none; padding: 0; text-align: left; width: 100%; max-width: 400px; margin: 0 auto; }.cert-list li { position: relative; padding-left: 25px; margin-bottom: 12px; font-size: 14px; font-family: "DM Sans", sans-serif; color: var(--text-secondary); }.cert-list li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; background-color: var(--accent-color); border-radius: 50%; }
+        .contact-me{border:0;outline:none;background:linear-gradient(135deg,#ff4757,#ff6b7a);box-shadow:0 8px 16px var(--shadow-color);color:#fff;padding:12px 20px;width:100%;border-radius:10px;margin-top:20px;cursor:pointer;font-size:14px;font-weight:600;font-family:"Jost",sans-serif;transition:all .3s;text-transform:uppercase;letter-spacing:1px}.contact-me:hover{transform:translateY(-2px);box-shadow:0 12px 24px var(--shadow-color)}.card-contact{display:flex;align-items:center;font-size:13px;color:var(--text-secondary);font-family:"DM Sans",sans-serif;line-height:1.6;cursor:pointer;transition:all .3s ease;padding:8px;border-radius:8px}.card-contact:hover{background:var(--component-bg-hover);color:var(--text-primary)}.card-contact+.card-contact{margin-top:12px}.card-contact i{flex-shrink:0;width:20px;height:20px;margin-right:12px;transition:.3s;color:var(--accent-color)}
+        #universe-info { min-height: 200px; margin-top: 20px; display: flex; justify-content: center; align-items: center; }
+        .preview-loader { width: 40px; height: 40px; border: 4px solid var(--component-bg); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .preview-card { display: block; text-decoration: none; border: 1px solid var(--component-bg-hover); border-radius: 15px; overflow: hidden; background: var(--component-bg); transition: all .3s ease; max-width: 400px; margin: 0 auto; }
+        .preview-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); border-color: var(--accent-color); }
+        .preview-image { width: 100%; height: auto; max-height: 200px; object-fit: cover; display: block; background-color: var(--component-bg-hover); }
+        .preview-content { padding: 15px; text-align: left; }
+        .preview-title { font-size: 1.1em; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .preview-description { font-family: "DM Sans", sans-serif; font-size: 0.9em; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px; }
+        .preview-url { font-size: 0.8em; color: var(--accent-color); opacity: 0.8; }
+        .journey-timeline { position: relative; padding: 2rem 0; margin: 0 auto; max-width: 800px; }
+        .journey-timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 4px; background: var(--component-bg-hover); border-radius: 2px; }
+        .journey-item { display: flex; position: relative; margin-bottom: 2.5rem; }
+        .journey-item-content { background-color: var(--component-bg); border-left: 4px solid var(--accent-color); border-radius: 8px; padding: 1.5rem; flex-grow: 1; margin-left: 50px; transition: .3s; }
+        .journey-item-content:hover { background-color: var(--component-bg-hover); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .journey-icon { position: absolute; left: 22px; top: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%; background-color: var(--bg-card); border: 3px solid var(--accent-color); z-index: 1; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .journey-date { font-weight: 600; color: var(--accent-color); font-size: 0.9em; margin-bottom: 0.5rem; }
+        .journey-title { font-weight: 500; font-size: 1.1em; color: var(--text-primary); margin-bottom: 0.5rem; }
+        .journey-desc { font-family: "DM Sans", sans-serif; font-size: 0.95em; line-height: 1.6; opacity: 0.8; }
+        .journey-item:last-child { margin-bottom: 0; }
+        .quiz-option { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background: var(--component-bg); border: 1px solid transparent; color: var(--text-primary); border-radius: 8px; cursor: pointer; transition: .3s; text-align: left; font-family: "DM Sans", sans-serif; }
+        .quiz-option:hover { background: var(--component-bg-hover); border-color: var(--accent-color); transform: translateX(5px); }
+        .quiz-result h3 { color: var(--accent-color); font-size: 1.5em; margin-bottom: 1rem; }
+        #quiz-retry-btn { background: var(--accent-color); color: white; border: none; font-weight: 600; }
+        #quiz-retry-btn:hover { opacity: 0.8; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal-overlay.is-visible { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--bg-card); padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; text-align: left; position: relative; transform: scale(0.9); transition: transform 0.3s ease; }
+        .modal-overlay.is-visible .modal-content { transform: scale(1); }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; color: var(--text-primary); cursor: pointer; z-index: 10; }
+        #modal-title { margin-bottom: 15px; color: var(--accent-color); }
+        #modal-tech { font-family: "DM Sans", sans-serif; font-style: italic; opacity: 0.8; margin-top: 15px; }
+        #terminal-modal .modal-content { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #0f0; }
+        #terminal-output { height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+        #terminal-output p { margin: 0; }
+        .prompt::before { content: 'User@Portfolio:~$ '; }
+        #encrypt-modal .modal-content { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #0f0; border: 1px solid var(--accent-color); }
+        #encrypted-message-input { width: 100%; height: 100px; background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); border-radius: 8px; padding: 10px; color: #0f0; resize: none; margin-top: 15px; }
+        #encrypted-message-output { margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.7); border-radius: 8px; word-break: break-all; min-height: 80px; }
+        #send-encrypted-btn { border:0;outline:none;background:var(--accent-color);box-shadow:0 4px 8px var(--shadow-color);color:#fff;padding:10px 15px;width:100%;border-radius:10px;margin-top:20px;cursor:pointer;font-weight:600;font-family:"Jost",sans-serif;transition:all .3s; }
+        #command-palette-overlay { align-items: flex-start; padding-top: 15vh; }
+        #command-palette-overlay .modal-content { padding: 10px; background: #111; max-width: 600px; }
+        #command-input { width: 100%; background: transparent; border: none; color: var(--text-primary); font-size: 1.2rem; padding: 15px; outline: none; font-family: "DM Sans", sans-serif; }
+        #command-results { margin-top: 10px; max-height: 300px; overflow-y: auto; }
+        .command-item { padding: 10px 15px; cursor: pointer; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .command-item:hover, .command-item.selected { background: var(--component-bg-hover); }
+    </style>
+</head>
+<body class="dark-mode">
+    <canvas id="background-canvas"></canvas>
+
+    <div class="card" data-state="#home">
+        
+        <div class="card-header">
+            <img class="card-avatar" src="./logo.png" alt="avatar" />
+            <h1 class="card-fullname">Your Name</h1>
+            <h2 class="card-jobtitle" data-lang-key="jobtitle"></h2>
+            <div class="header-buttons">
+                <button id="encrypt-toggle" class="encrypt-toggle" title="Encrypted Broadcast"><i class="fa-solid fa-satellite-dish"></i></button>
+                <button id="lang-toggle" class="lang-toggle">ID</button>
+                <button id="theme-toggle" class="theme-toggle"><i class="fas fa-sun"></i></button>
+            </div>
+        </div>
+        
+        <div class="card-main">
+            <div class="card-section is-active" id="home">
+                <div class="card-content">
+                    <div class="card-subtitle stagger-item" data-lang-key="welcome"></div>
+                    <p class="card-text stagger-item" data-lang-key="home_text" style="text-align: center;"></p>
+                </div>
+            </div>
+
+            <div class="card-section" id="about">
+                <div class="card-content"><div class="card-subtitle" data-lang-key="about_me"></div><p class="card-text" data-lang-key="about_text"></p></div>
+            </div>
+
+            <div class="card-section" id="universe">
+                <div class="card-content universe-container">
+                    <div class="card-subtitle" data-lang-key="universe_title"></div>
+                    <div class="universe-grid">
+                        <div class="universe-item" data-id="main"><i class="fas fa-globe"></i><div class="universe-item-title" data-lang-key="universe_main_title"></div></div>
+                        <div class="universe-item" data-id="store"><i class="fas fa-store"></i><div class="universe-item-title" data-lang-key="universe_store_title"></div></div>
+                        <div class="universe-item" data-id="api"><i class="fas fa-server"></i><div class="universe-item-title" data-lang-key="universe_api_title"></div></div>
+                        <div class="universe-item active" data-id="portfolio"><i class="fas fa-id-card"></i><div class="universe-item-title" data-lang-key="universe_portfolio_title"></div></div>
+                    </div>
+                    <div id="universe-info"></div>
+                </div>
+            </div>
+
+            <div class="card-section" id="skills">
+                <div class="card-content"><div class="card-subtitle" data-lang-key="my_skills"></div><div class="skills-grid" id="skills-container"></div></div>
+            </div>
+
+            <div class="card-section" id="projects">
+                <div class="card-content">
+                    <div class="card-subtitle" data-lang-key="my_projects"></div>
+                    <div id="projects-container"></div>
+                </div>
+            </div>
+
+            <div class="card-section" id="certifications">
+                <div class="card-content"><div class="card-subtitle" data-lang-key="my_certs"></div><div class="cert-filters" id="cert-filters-container"></div><ul class="cert-list" id="cert-list-container"></ul></div>
+            </div>
+            
+            <div class="card-section" id="contact">
+                 <div class="card-content">
+                     <div class="card-subtitle" data-lang-key="get_in_touch"></div>
+                     <div class="card-contact-wrapper">
+                         <div class="card-contact"><i class="fas fa-map-marker-alt"></i> Your Location</div>
+                         <div class="card-contact"><i class="fas fa-phone"></i> +12 345 678 9101</div>
+                         <div class="card-contact"><i class="fas fa-envelope"></i> your.email@example.com</div>
+                         <a href="#" target="_blank">
+                             <button class="contact-me" data-lang-key="contact_me"></button>
+                         </a>
+                     </div>
+                 </div>
+            </div>
+
+            <div class="card-section" id="journey">
+                <div class="card-content">
+                    <div class="card-subtitle" data-lang-key="journey_title"></div>
+                    <div class="journey-timeline" id="journey-timeline-container"></div>
+                </div>
+            </div>
+            
+            <div class="card-section" id="quiz">
+                <div class="card-content">
+                    <div class="card-subtitle" data-lang-key="quiz_title"></div>
+                    <div id="quiz-container"></div>
+                    <div id="quiz-result" class="quiz-result" style="display: none;">
+                        <h3 data-lang-key-title></h3>
+                        <p class="card-text" data-lang-key-desc></p>
+                        <button class="quiz-option" id="quiz-retry-btn" data-lang-key="quiz_retry"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-buttons">
+            <button data-section="#home" class="is-active" data-lang-key="home">Home</button>
+            <button data-section="#journey" data-lang-key="journey">Journey</button>
+            <button data-section="#about" data-lang-key="about">About</button>
+            <button data-section="#skills" data-lang-key="skills">Skills</button>
+            <button data-section="#certifications" data-lang-key="certs">Certs</button>
+            <button data-section="#universe" data-lang-key="universe">Universe</button>
+            <button data-section="#quiz" data-lang-key="quiz">Quiz</button>
+            <button data-section="#contact" data-lang-key="contact">Contact</button>
+        </div>
+    </div>
+
+    <div id="project-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <h3 id="modal-title"></h3>
+            <p id="modal-desc" class="card-text"></p>
+            <p id="modal-tech"></p>
+        </div>
+    </div>
+    <div id="terminal-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <div id="terminal-output"></div>
+        </div>
+    </div>
+    <div id="encrypt-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <h3 data-lang-key="encrypt_title" style="color: #0f0;"></h3>
+            <p class="card-text" data-lang-key="encrypt_desc" style="color: #0f0; opacity: 0.8; font-size: 0.9em;"></p>
+            <textarea id="encrypted-message-input" data-lang-key-placeholder="encrypt_placeholder"></textarea>
+            <pre id="encrypted-message-output"></pre>
+            <button id="send-encrypted-btn" data-lang-key="encrypt_send"></button>
+        </div>
+    </div>
+    <div id="command-palette-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <input type="text" id="command-input" placeholder="Type a command...">
+            <div id="command-results"></div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // =================================================================================
+    // ✨ EDIT DATA DI SINI ✨
+    // Ganti semua placeholder di bawah ini dengan datamu sendiri.
+    // =================================================================================
+    const translations = {
+        en: {
+            // General
+            jobtitle: 'Your Profession | Your Title', home: 'Home', about: 'About', skills: 'Skills', projects: 'Projects', certs: 'Certs', contact: 'Contact', journey: 'Journey', quiz: 'Quiz', universe: 'Universe',
+            welcome: 'Welcome!',
+            
+            // Home Section
+            home_text: "This is the main section. Write a powerful and brief introduction about yourself here. Make it count!",
+            
+            // About Section
+            about_me: 'About Me',
+            about_text: "Here, you can elaborate more about your passion, your journey, your expertise, and what you do. Feel free to write a few paragraphs.",
+            
+            // Sections Titles
+            my_skills: 'Professional Skills', my_projects: 'My Projects', my_certs: 'My Certifications', get_in_touch: 'Get In Touch', contact_me: 'Contact Me',
+            
+            // Universe Section
+            universe_title: 'My Digital Universe', universe_main_title: 'Main Website', universe_store_title: 'My Store', universe_api_title: 'My API', universe_portfolio_title: 'This Portfolio',
+            
+            // Project Section (placeholders for modal)
+            project1_title: 'Project Alpha', project1_desc: 'Description for Project Alpha. Explain the purpose, the technology, and your role.',
+            project2_title: 'Project Beta', project2_desc: 'Description for Project Beta. What problem does it solve?',
+            project3_title: 'Project Gamma', project3_desc: 'Description for Project Gamma. What did you learn from building this?',
+            
+            // Journey Section
+            journey_title: "My Progress & Journey",
+
+            // Quiz Section
+            quiz_title: "What's Your Tech Profile?", quiz_retry: "Try Again",
+            quiz_q1: 'When facing a bug, what is your first reaction?', quiz_q1_a1: 'Read the docs and find a similar case.', quiz_q1_a2: 'Try to replicate it and understand the cause.', quiz_q1_a3: 'Use a debugger and go step-by-step.',
+            quiz_q2: 'What aspect of technology excites you the most?', quiz_q2_a1: 'Building beautiful and intuitive user interfaces.', quiz_q2_a2: 'Solving complex logical problems.', quiz_q2_a3: 'Creating efficient and scalable systems.',
+            quiz_q3: 'When starting a new project, what do you prioritize?', quiz_q3_a1: 'A solid and well-thought-out design.', quiz_q3_a2: 'Clean, maintainable, and well-documented code.', quiz_q3_a3: 'Fast performance and scalability from the start.',
+            res_guardian_title: 'The Architect', res_guardian_desc: 'You are a planner and a designer. You believe a strong foundation and a good design are keys to a successful project.',
+            res_explorer_title: 'The Problem Solver', res_explorer_desc: 'You are a logical thinker. You enjoy diving deep into challenges and understanding how things work.',
+            res_anarchist_title: 'The Optimizer', res_anarchist_desc: 'You are an engineer focused on performance. You strive for efficiency, speed, and scalability in everything you build.',
+            
+            // Encrypt Modal
+            encrypt_title: 'Secure Broadcast', encrypt_desc: 'This is a demo of a one-way broadcast. Messages are scrambled and not stored anywhere.', encrypt_placeholder: 'Type your secure message...', encrypt_send: 'Transmit Broadcast',
+        },
+        id: {
+            // General
+            jobtitle: 'Profesimu | Gelarmu', home: 'Beranda', about: 'Tentang', skills: 'Keahlian', projects: 'Proyek', certs: 'Serti', contact: 'Kontak', journey: 'Perjalanan', quiz: 'Kuis', universe: 'Dunia',
+            welcome: 'Selamat Datang!',
+            
+            // Home Section
+            home_text: "Ini adalah bagian utama. Tulis perkenalan singkat yang berkesan tentang dirimu di sini.",
+            
+            // About Section
+            about_me: 'Tentang Saya',
+            about_text: "Di sini, jelaskan lebih lanjut tentang minat, perjalanan karir, keahlian, dan apa yang kamu kerjakan. Kamu bisa menulis beberapa paragraf.",
+            
+            // Sections Titles
+            my_skills: 'Keahlian Profesional', my_projects: 'Proyek Saya', my_certs: 'Sertifikasi Saya', get_in_touch: 'Hubungi Saya', contact_me: 'Hubungi Saya',
+            
+            // Universe Section
+            universe_title: 'Dunia Digital Saya', universe_main_title: 'Website Utama', universe_store_title: 'Toko Saya', universe_api_title: 'API Saya', universe_portfolio_title: 'Portfolio Ini',
+
+            // Project Section (placeholders for modal)
+            project1_title: 'Proyek Alpha', project1_desc: 'Deskripsi untuk Proyek Alpha. Jelaskan tujuan, teknologi, dan peranmu.',
+            project2_title: 'Proyek Beta', project2_desc: 'Deskripsi untuk Proyek Beta. Masalah apa yang diselesaikan?',
+            project3_title: 'Proyek Gamma', project3_desc: 'Deskripsi untuk Proyek Gamma. Apa yang kamu pelajari dari proyek ini?',
+
+            // Journey Section
+            journey_title: 'Progres & Perjalanan Saya',
+
+            // Quiz Section
+            quiz_title: 'Apa Profil Teknologimu?', quiz_retry: "Coba Lagi",
+            quiz_q1: 'Saat menghadapi bug, apa reaksi pertamamu?', quiz_q1_a1: 'Membaca dokumentasi dan mencari kasus serupa.', quiz_q1_a2: 'Mencoba mereplikasi dan memahami penyebabnya.', quiz_q1_a3: 'Menggunakan debugger dan melacak langkah demi langkah.',
+            quiz_q2: 'Aspek teknologi apa yang paling membuatmu tertarik?', quiz_q2_a1: 'Membangun antarmuka pengguna yang indah dan intuitif.', quiz_q2_a2: 'Menyelesaikan masalah logika yang kompleks.', quiz_q2_a3: 'Menciptakan sistem yang efisien dan skalabel.',
+            quiz_q3: 'Saat memulai proyek baru, apa yang kamu prioritaskan?', quiz_q3_a1: 'Desain yang solid dan terencana dengan baik.', quiz_q3_a2: 'Kode yang bersih, mudah dirawat, dan terdokumentasi.', quiz_q3_a3: 'Performa cepat dan skalabilitas sejak awal.',
+            res_guardian_title: 'Sang Arsitek', res_guardian_desc: 'Anda adalah seorang perencana dan desainer. Anda percaya fondasi yang kuat dan desain yang baik adalah kunci proyek yang sukses.',
+            res_explorer_title: 'Sang Pemecah Masalah', res_explorer_desc: 'Anda adalah seorang pemikir logis. Anda menikmati menyelami tantangan dan memahami cara kerja segala sesuatu.',
+            res_anarchist_title: 'Sang Pengoptimal', res_anarchist_desc: 'Anda adalah seorang insinyur yang berfokus pada kinerja. Anda mengutamakan efisiensi, kecepatan, dan skalabilitas dalam semua yang Anda bangun.',
+
+            // Encrypt Modal
+            encrypt_title: 'Siaran Aman', encrypt_desc: 'Ini adalah demo siaran satu arah. Pesan diacak dan tidak disimpan di mana pun.', encrypt_placeholder: 'Ketik pesan aman Anda...', encrypt_send: 'Kirim Siaran',
+        }
+    };
+    
+    // Ganti dengan daftar keahlianmu
+    const allSkills = [ 
+        { name: 'Your First Skill (e.g., Web Development)', level: 'Expert', width: '95%' },
+        { name: 'Your Second Skill (e.g., UI/UX Design)', level: 'Advanced', width: '85%' },
+        { name: 'Your Third Skill (e.g., Public Speaking)', level: 'Intermediate', width: '70%' },
+    ];
+
+    // Ganti dengan daftar sertifikasimu
+    const allCertifications = [ 
+        { issuer: 'Certifying Body Name', name: 'Nama Sertifikat Pertama Anda' },
+        { issuer: 'Another Certifier', name: 'Nama Sertifikat Kedua Anda' },
+        { issuer: 'Certifying Body Name', name: 'Sertifikat Lain dari Lembaga yang Sama' },
+    ];
+    
+    // Ganti dengan link ke proyek-proyekmu di dunia digital
+    const universeData = { 
+        portfolio: { link: '#', desc_en: 'This page! An interactive portfolio showcasing skills and journey.', desc_id: 'Halaman ini! Portfolio interaktif yang menampilkan keahlian dan perjalanan.' }, 
+        main: { link: 'https://example.com', target: '_blank' }, 
+        store: { link: 'https://example.com/store', target: '_blank' }, 
+        api: { link: 'https://example.com/api', target: '_blank' } 
+    };
+    
+    // Ganti dengan perjalanan karir atau belajarmu
+    const journeyData = [
+        { type: 'project', title_en: 'Started Learning', title_id: 'Mulai Belajar', desc_en: 'My first step into this field.', desc_id: 'Langkah pertamaku di bidang ini.', date: '2020', icon: 'fa-solid fa-code' },
+        { type: 'cert', name: 'First Certification', issuer: 'An Institution', desc_en: 'Achieved my first official recognition.', desc_id: 'Meraih pengakuan resmi pertamaku.', date: '2022', icon: 'fa-solid fa-award' },
+        { type: 'project', title_en: 'Launched First Major Project', title_id: 'Meluncurkan Proyek Besar Pertama', desc_en: 'Successfully launched a significant project.', desc_id: 'Berhasil meluncurkan proyek yang signifikan.', date: '2024', icon: 'fa-solid fa-rocket' },
+    ].sort((a, b) => parseInt(a.date) - parseInt(b.date));
+    
+    // Data untuk kuis (bisa disesuaikan dengan tema portfoliomu)
+    const quizData = [
+        { questionKey: 'quiz_q1', answers: [{ textKey: 'quiz_q1_a1', value: 'guardian' }, { textKey: 'quiz_q1_a2', value: 'explorer' }, { textKey: 'quiz_q1_a3', value: 'anarchist' }] },
+        { questionKey: 'quiz_q2', answers: [{ textKey: 'quiz_q2_a1', value: 'guardian' }, { textKey: 'quiz_q2_a2', value: 'explorer' }, { textKey: 'quiz_q2_a3', value: 'anarchist' }] },
+        { questionKey: 'quiz_q3', answers: [{ textKey: 'quiz_q3_a1', value: 'guardian' }, { textKey: 'quiz_q3_a2', value: 'explorer' }, { textKey: 'quiz_q3_a3', value: 'anarchist' }] },
+    ];
+    
+    // =================================================================================
+    // ✨ LOGIKA (Tidak perlu banyak diubah)
+    // =================================================================================
+    const card = document.querySelector(".card");
+    const mainContent = document.querySelector(".card-main");
+    const navButtons = document.querySelectorAll(".card-buttons button");
+    const sections = document.querySelectorAll(".card-section");
+    let currentLang = localStorage.getItem('lang') || 'en';
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('lang', lang);
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            const key = el.dataset.langKey;
+            if (translations[lang] && translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+        document.querySelectorAll('[data-lang-key-placeholder]').forEach(el => {
+            const key = el.dataset.langKeyPlaceholder;
+            if (translations[lang] && translations[lang][key]) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+        langToggle.textContent = lang === 'en' ? 'ID' : 'EN';
+        
+        renderProjects();
+        renderJourney();
+        if (document.querySelector('#quiz.is-active')) {
+            startQuiz();
+        }
+        updateUniverseInfo(document.querySelector('.universe-item.active')?.dataset.id || 'portfolio');
+    }
+
+    const langToggle = document.getElementById('lang-toggle');
+    langToggle.addEventListener('click', () => setLanguage(currentLang === 'en' ? 'id' : 'en'));
+
+    const themeToggle = document.getElementById('theme-toggle');
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        themeToggle.innerHTML = isLight ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    function handleButtonClick(targetSectionSelector) {
+        const section = document.querySelector(targetSectionSelector);
+        if (!section) return;
+
+        card.classList.toggle("is-active", targetSectionSelector !== "#home");
+        sections.forEach(s => s.classList.remove("is-active"));
+        navButtons.forEach(b => {
+            b.classList.toggle("is-active", b.getAttribute("data-section") === targetSectionSelector);
+        });
+        section.classList.add("is-active");
+        mainContent.scrollTop = 0;
+
+        const items = section.querySelectorAll('.stagger-item');
+        items.forEach((item, index) => {
+            item.style.animation = 'none';
+            item.offsetHeight;
+            item.style.animation = `slideUpFadeIn 0.5s ease-out ${index * 0.1}s forwards`;
+        });
+    };
+    
+    navButtons.forEach(btn => btn.addEventListener("click", (e) => handleButtonClick(e.target.getAttribute("data-section"))));
+
+    const bgCanvas = document.getElementById('background-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let asciiParticles;
+    const mouse = { x: null, y: null, radius: 150 };
+    const asciiChars = ['0', '1', '{', '}', '<', '>', '/', ';', ':', '*', '#'];
+    let asciiAnimationId;
+
+    window.addEventListener('mousemove', (event) => { mouse.x = event.clientX; mouse.y = event.clientY; });
+    window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+    
+    class AsciiParticle { /* ... (Logic unchanged) ... */
+        constructor(x, y, size, char) { this.x = x; this.y = y; this.size = size; this.char = char; this.baseX = this.x; this.baseY = this.y; this.density = (Math.random() * 40) + 5; }
+        draw() { bgCtx.fillStyle = document.body.classList.contains('light-mode') ? 'rgba(214, 48, 49, 0.4)' : 'rgba(255, 71, 87, 0.4)'; bgCtx.font = `${this.size}px monospace`; bgCtx.fillText(this.char, this.x, this.y); }
+        update() { if (mouse.x === null) { if (this.x !== this.baseX) { this.x -= (this.x - this.baseX) / 20; } if (this.y !== this.baseY) { this.y -= (this.y - this.baseY) / 20; } return; } let dx = mouse.x - this.x; let dy = mouse.y - this.y; let distance = Math.sqrt(dx * dx + dy * dy); if (distance < mouse.radius) { let force = (mouse.radius - distance) / mouse.radius; let forceDirectionX = dx / distance; let forceDirectionY = dy / distance; let directionX = forceDirectionX * force * this.density; let directionY = forceDirectionY * force * this.density; this.x -= directionX; this.y -= directionY; } else { if (this.x !== this.baseX) { this.x -= (this.x - this.baseX) / 10; } if (this.y !== this.baseY) { this.y -= (this.y - this.baseY) / 10; } } }
+    }
+    function initAsciiBackground() { /* ... (Logic unchanged) ... */
+        asciiParticles = []; let numberOfParticles = (bgCanvas.width * bgCanvas.height) / 12000; for (let i = 0; i < numberOfParticles; i++) { let size = Math.random() * 5 + 8; let x = Math.random() * bgCanvas.width; let y = Math.random() * bgCanvas.height; let char = asciiChars[Math.floor(Math.random() * asciiChars.length)]; asciiParticles.push(new AsciiParticle(x, y, size, char)); }
+    }
+    function animateAscii() { /* ... (Logic unchanged) ... */
+        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); for(let i = 0; i < asciiParticles.length; i++) { asciiParticles[i].update(); asciiParticles[i].draw(); } asciiAnimationId = requestAnimationFrame(animateAscii);
+    }
+    function setBgCanvasSize() { /* ... (Logic unchanged) ... */
+        bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; initAsciiBackground();
+    }
+    window.addEventListener('resize', setBgCanvasSize);
+
+    function renderSkills() { /* ... (Logic unchanged, uses allSkills data) ... */
+        const skillsContainer = document.getElementById('skills-container'); skillsContainer.innerHTML = ''; allSkills.forEach(skill => { const skillHTML = `<div class="skill-item stagger-item"><div class="skill-item-header"><span class="skill-name">${skill.name}</span><span class="skill-level">${skill.level}</span></div><div class="skill-bar"><div class="skill-progress" style="--skill-width: ${skill.width};"></div></div></div>`; skillsContainer.innerHTML += skillHTML; });
+    }
+    function renderCerts() { /* ... (Logic unchanged, uses allCertifications data) ... */
+        const certsContainer = document.getElementById('cert-list-container'); const filtersContainer = document.getElementById('cert-filters-container'); filtersContainer.innerHTML = ''; certsContainer.innerHTML = ''; const issuers = ['All', ...new Set(allCertifications.map(c => c.issuer))]; issuers.forEach(issuer => { const button = document.createElement('button'); button.textContent = issuer; button.dataset.filter = issuer; if (issuer === 'All') button.classList.add('active'); filtersContainer.appendChild(button); }); function filterCerts(filter = 'All') { certsContainer.innerHTML = ''; const filteredCerts = (filter === 'All') ? allCertifications : allCertifications.filter(c => c.issuer === filter); filteredCerts.forEach((cert, index) => { const li = document.createElement('li'); li.textContent = cert.name; li.className = 'stagger-item'; li.style.animationDelay = `${index * 0.05}s`; certsContainer.appendChild(li); }); } filtersContainer.addEventListener('click', e => { if (e.target.tagName === 'BUTTON') { filtersContainer.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); filterCerts(e.target.dataset.filter); } }); filterCerts();
+    }
+    function renderProjects() { /* ... (Logic unchanged, uses translations data) ... */
+        const container = document.getElementById('projects-container'); container.innerHTML = ''; const projectCards = [ { title: "Project Alpha", tech: "HTML, CSS, JS", lang_key_title: "project1_title", lang_key_desc: "project1_desc"}, { title: "Project Beta", tech: "React, Node.js", lang_key_title: "project2_title", lang_key_desc: "project2_desc"}, { title: "Project Gamma", tech: "Python, Flask", lang_key_title: "project3_title", lang_key_desc: "project3_desc"} ]; projectCards.forEach(p => { const desc = currentLang === 'id' ? translations.id[p.lang_key_desc] : translations.en[p.lang_key_desc]; const cardHTML = ` <div class="project-card stagger-item" data-title="${p.title}" data-desc="${desc}" data-tech="${p.tech}"> <div class="project-title" data-lang-key="${p.lang_key_title}">${currentLang === 'id' ? translations.id[p.lang_key_title] : translations.en[p.lang_key_title]}</div> <div class="project-desc" data-lang-key="${p.lang_key_desc}">${desc}</div> </div>`; container.innerHTML += cardHTML; }); document.querySelectorAll('.project-card').forEach(pCard => { pCard.addEventListener('click', () => showProjectModal(pCard)); });
+    }
+    function renderJourney() { /* ... (Logic unchanged, uses journeyData) ... */
+        const journeyContainer = document.getElementById('journey-timeline-container'); journeyContainer.innerHTML = ''; journeyData.forEach(item => { const title = currentLang === 'id' ? (item.title_id || item.name) : (item.title_en || item.name); let desc = ''; if (item.type === 'cert') { const issuerText = `${currentLang === 'id' ? 'Diterbitkan oleh' : 'Issued by'} <strong>${item.issuer}</strong>.`; const itemDesc = currentLang === 'id' ? item.desc_id : item.desc_en; desc = itemDesc ? `${issuerText}<br>${itemDesc}` : issuerText; } else { desc = currentLang === 'id' ? item.desc_id : item.desc_en; } const itemHTML = ` <div class="journey-item stagger-item"> <div class="journey-icon"><i class="${item.icon}"></i></div> <div class="journey-item-content"> <div class="journey-date">${item.date}</div> <div class="journey-title">${title}</div> <p class="journey-desc">${desc}</p> </div> </div>`; journeyContainer.innerHTML += itemHTML; });
+    }
+
+    const universeItems = document.querySelectorAll('.universe-item');
+    const universeInfo = document.getElementById('universe-info');
+    function updateUniverseInfo(id) { /* ... (Logic unchanged, uses universeData) ... */
+        if (!id || !universeData[id]) return; universeInfo.innerHTML = `<div class="preview-loader"></div>`; const data = universeData[id]; const targetUrl = data.link; if (id === 'portfolio') { const desc = currentLang === 'id' ? data.desc_id : data.desc_en; const titleKey = `universe_${id}_title`; universeInfo.innerHTML = `<div style="padding: 20px;"><h4 data-lang-key="${titleKey}">${translations[currentLang][titleKey]}</h4><p>${desc}</p></div>`; return; } const apiUrl = `https://jsonlink.io/api/extractor/?url=${encodeURIComponent(targetUrl)}`; fetch(apiUrl) .then(response => { if (!response.ok) { throw new Error('Network response was not ok'); } return response.json(); }) .then(previewData => { const { title, description, image, url } = previewData; const previewHTML = ` <a href="${url}" target="_blank" class="preview-card"> ${image ? `<img src="${image}" alt="Preview of ${title}" class="preview-image" onerror="this.style.display='none'">` : ''} <div class="preview-content"> <h4 class="preview-title">${title || 'No Title Found'}</h4> <p class="preview-description">${description || 'No description available.'}</p> <span class="preview-url">${url}</span> </div> </a>`; universeInfo.innerHTML = previewHTML; }) .catch(error => { console.error('Error fetching preview:', error); const titleKey = `universe_${id}_title`; universeInfo.innerHTML = `<div style="padding: 20px;"><h4 data-lang-key="${titleKey}">${translations[currentLang][titleKey]}</h4><p>Could not fetch preview. Visit the site directly.</p><a href="${targetUrl}" target="_blank" class="contact-me" style="margin-top:10px; display:inline-block; width:auto;">Visit</a></div>`; });
+    }
+    universeItems.forEach(item => { item.addEventListener('click', () => { universeItems.forEach(i => i.classList.remove('active')); item.classList.add('active'); updateUniverseInfo(item.dataset.id); }); });
+    
+    // Quiz Logic
+    const quizContainer = document.getElementById('quiz-container'); const quizResultContainer = document.getElementById('quiz-result'); const quizRetryBtn = document.getElementById('quiz-retry-btn'); let currentQuestionIndex = 0; let userAnswers = [];
+    function startQuiz() { /* ... (Logic unchanged) ... */
+        currentQuestionIndex = 0; userAnswers = []; quizResultContainer.style.display = 'none'; quizContainer.style.display = 'block'; showQuestion(currentQuestionIndex);
+    }
+    function showQuestion(index) { /* ... (Logic unchanged) ... */
+        quizContainer.innerHTML = ''; const questionData = quizData[index]; const questionText = translations[currentLang][questionData.questionKey]; const questionTitle = document.createElement('p'); questionTitle.className = 'card-text'; questionTitle.textContent = `${index + 1}. ${questionText}`; questionTitle.style.marginBottom = '20px'; quizContainer.appendChild(questionTitle); questionData.answers.forEach(answer => { const button = document.createElement('button'); button.className = 'quiz-option'; button.textContent = translations[currentLang][answer.textKey]; button.onclick = () => selectAnswer(answer.value); quizContainer.appendChild(button); });
+    }
+    function selectAnswer(value) { /* ... (Logic unchanged) ... */
+        userAnswers.push(value); currentQuestionIndex++; if (currentQuestionIndex < quizData.length) { showQuestion(currentQuestionIndex); } else { showResult(); }
+    }
+    function showResult() { /* ... (Logic unchanged) ... */
+        const counts = {}; userAnswers.forEach(ans => { counts[ans] = (counts[ans] || 0) + 1; }); const resultType = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b); quizContainer.style.display = 'none'; quizResultContainer.style.display = 'block'; const titleEl = quizResultContainer.querySelector('[data-lang-key-title]'); const descEl = quizResultContainer.querySelector('[data-lang-key-desc]'); titleEl.textContent = translations[currentLang][`res_${resultType}_title`]; descEl.textContent = translations[currentLang][`res_${resultType}_desc`];
+    }
+    quizRetryBtn.addEventListener('click', startQuiz);
+
+    // Modals & Easter Egg Logic
+    const projectModal = document.getElementById('project-modal');
+    function showProjectModal(cardElement) { projectModal.querySelector('#modal-title').textContent = cardElement.dataset.title; projectModal.querySelector('#modal-desc').innerHTML = cardElement.dataset.desc; projectModal.querySelector('#modal-tech').textContent = "Tech: " + cardElement.dataset.tech; projectModal.classList.add('is-visible'); }
+    const encryptModal = document.getElementById('encrypt-modal'); document.getElementById('encrypt-toggle').addEventListener('click', () => encryptModal.classList.add('is-visible')); const messageInput = document.getElementById('encrypted-message-input'); const outputDisplay = document.getElementById('encrypted-message-output'); const sendBtn = document.getElementById('send-encrypted-btn');
+    messageInput.addEventListener('input', () => { outputDisplay.textContent = messageInput.value.split('').map(char => char === ' ' ? ' ' : `0x${char.charCodeAt(0).toString(16)}`).join(''); });
+    sendBtn.addEventListener('click', () => { if (!messageInput.value) return; const originalText = sendBtn.textContent; sendBtn.disabled = true; let statuses = currentLang === 'id' ? ['Mengenkripsi...', 'Mengirim Paket Aman...', 'Sukses! Siaran Terkirim.'] : ['Encrypting...', 'Transmitting Secure Packet...', 'Success! Broadcast Sent.']; let i = 0; const statusInterval = setInterval(() => { sendBtn.textContent = statuses[i]; i++; if (i === statuses.length) { clearInterval(statusInterval); setTimeout(() => { sendBtn.textContent = originalText; sendBtn.disabled = false; messageInput.value = ''; outputDisplay.textContent = ''; encryptModal.classList.remove('is-visible'); }, 1500); } }, 800); });
+    const terminalModal = document.getElementById('terminal-modal'); const terminalOutput = document.getElementById('terminal-output'); const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']; let konamiIndex = 0;
+    function showTerminal() { terminalModal.classList.add('is-visible'); terminalOutput.innerHTML = ''; const messages = [ '<p class="prompt">Accessing secure shell...</p>', '<p>Authentication successful.</p>', '<p class="prompt">Executing `whoami`...</p>', '<p>A curious mind in a digital world.</p>' ]; let delay = 0; messages.forEach(msg => { setTimeout(() => { terminalOutput.innerHTML += msg; terminalOutput.scrollTop = terminalOutput.scrollHeight; }, delay); delay += Math.random() * 1000 + 500; }); }
+    document.querySelectorAll('.modal-overlay').forEach(modal => { modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('is-visible'); }); modal.querySelector('.modal-close').addEventListener('click', () => modal.classList.remove('is-visible')); });
+    
+    // Command Palette Logic
+    const commandPalette = document.getElementById('command-palette-overlay'); const commandInput = document.getElementById('command-input'); const commandResults = document.getElementById('command-results'); const commands = [ { name: 'Go to Home', action: () => handleButtonClick('#home') }, { name: 'Go to Journey', action: () => handleButtonClick('#journey') }, { name: 'Go to About', action: () => handleButtonClick('#about') }, { name: 'Go to Skills', action: () => handleButtonClick('#skills') }, { name: 'Go to Certifications', action: () => handleButtonClick('#certifications') }, { name: 'Go to Universe', action: () => handleButtonClick('#universe') }, { name: 'Go to Quiz', action: () => handleButtonClick('#quiz') }, { name: 'Go to Contact', action: () => handleButtonClick('#contact') }, { name: 'Toggle Theme', action: () => themeToggle.click() }, { name: 'Switch to English', action: () => setLanguage('en') }, { name: 'Switch to Indonesian', action: () => setLanguage('id') }, { name: 'Run Easter Egg', action: () => showTerminal() } ];
+    document.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); commandPalette.classList.add('is-visible'); commandInput.focus(); renderCommandResults(''); } if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('is-visible')); } if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase() && !commandPalette.classList.contains('is-visible')) { konamiIndex++; if (konamiIndex === konamiCode.length) { konamiIndex = 0; showTerminal(); } } else if (e.key !== konamiCode[0].toLowerCase()) { konamiIndex = 0; } });
+    commandInput.addEventListener('input', () => renderCommandResults(commandInput.value)); commandInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const selected = commandResults.querySelector('.selected'); if (selected) selected.click(); } });
+    function renderCommandResults(query) { commandResults.innerHTML = ''; const filtered = commands.filter(c => c.name.toLowerCase().includes(query.toLowerCase())); filtered.forEach((cmd, index) => { const item = document.createElement('div'); item.className = 'command-item'; if (index === 0) item.classList.add('selected'); item.textContent = cmd.name; item.onclick = () => { cmd.action(); commandPalette.classList.remove('is-visible'); commandInput.value = ''; }; commandResults.appendChild(item); }); }
+    
+    // Initialization
+    function init() {
+        renderSkills();
+        renderCerts();
+        renderProjects();
+        renderJourney();
+        startQuiz();
+        setLanguage(currentLang);
+        setBgCanvasSize();
+        animateAscii();
+        updateUniverseInfo('portfolio');
+    }
+    
+    init();
+});
+</script>
+</body>
+</html>
