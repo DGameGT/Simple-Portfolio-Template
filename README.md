@@ -50,13 +50,13 @@ Buka file `index.html` dan cari bagian `<script>`. Di dalamnya, Anda akan menemu
 
   - **Nama**: Ubah `"Your Name"` di dalam `<h1>` HTML.
     ```html
-    <h1 class="card-fullname">Dika-Kun</h1>
+    <h1 class="card-fullname">Nama anda</h1>
     ```
   - **Kontak**: Ubah informasi kontak di dalam `div` dengan `id="contact"`.
     ```html
-    <div class="card-contact"><i class="fas fa-map-marker-alt"></i> Bekasi, Indonesia</div>
+    <div class="card-contact"><i class="fas fa-map-marker-alt"></i>Lokasi anda</div>
     <div class="card-contact"><i class="fas fa-phone"></i> +62 123 4567 890</div>
-    <div class="card-contact"><i class="fas fa-envelope"></i> dika.kun@email.com</div>
+    <div class="card-contact"><i class="fas fa-envelope"></i> example@email.com</div>
     ```
 
 #### Teks & Terjemahan (`translations`)
