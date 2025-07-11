@@ -1,6 +1,6 @@
-# Simple Portfolio Template
+# Template Portfolio Simple
 
-Selamat datang di **Simple Portfolio Template**, sebuah template portofolio single-page yang interaktif, modern, dan sepenuhnya dapat dikustomisasi. Dibuat dengan HTML, CSS, dan JavaScript murni, template ini dirancang untuk menampilkan profil profesional, proyek, keahlian, dan perjalanan karirmu dengan cara yang menarik dan dinamis.
+Selamat datang di **Template Portfolio Simple**, sebuah template portofolio single-page yang interaktif, modern, dan sepenuhnya dapat dikustomisasi. Dibuat dengan HTML, CSS, dan JavaScript murni, template ini dirancang untuk menampilkan profil profesional, proyek, keahlian, dan perjalanan karirmu dengan cara yang menarik dan dinamis.
 
 Cek contoh live 👉 [https://dgxoportfolio.netlify.app/](https://dgxoportfolio.netlify.app/)
 
