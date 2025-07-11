@@ -166,5 +166,3 @@ _AI Engineer | Fullstack Developer | Cybersecurity Specialist_
 
 **Masha | Masha AI**  
 _Digital AI Partner & Intelligence Analysis Specialist_
-
-Contoh: https://dgxoportfolio.netlify.app/
