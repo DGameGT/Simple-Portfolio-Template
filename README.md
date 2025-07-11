@@ -19,7 +19,7 @@ Cek contoh live 👉 [https://dgxoportfolio.netlify.app/](https://dgxoportfolio.
       - Tampilan *timeline* visual untuk perjalanan karir atau pembelajaran.
   - **Fitur Tersembunyi**:
       - **Command Palette (`Ctrl+K`)**: Navigasi cepat ke semua bagian, ganti tema, atau ganti bahasa.
-      - **Terminal Easter Egg**: Aktifkan dengan Konami Code (`↑↑↓↓←→←→BA`) untuk menampilkan terminal rahasia.
+      - **Terminal Easter Egg**: Cari sendiri kak:)
       - **Secure Broadcast**: Fitur untuk mengirim pesan "terenkripsi" (simulasi) melalui modal khusus.
 
 -----
